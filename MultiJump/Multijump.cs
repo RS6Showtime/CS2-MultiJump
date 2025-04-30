@@ -35,7 +35,7 @@ namespace MultiJump
 
         public override void Load(bool hotReload)
         {
-            // Delete everything from the dict on load
+            // nevermind
         }
 
         public void SetVars()
