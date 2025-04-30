@@ -10,3 +10,9 @@ After compiling or downloading the plugin completely, a json will be created in 
 ```
 configs/plugins/MultiJump/MultiJump.json
 ```
+
+# Commands
+There is a single command available, and it's used to reload the config. When you want to reload the value you just edited in the json file. (Can be used from the console by the server)
+```
+css_reloadconfig
+```
