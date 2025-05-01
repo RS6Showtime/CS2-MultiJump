@@ -31,6 +31,7 @@ namespace MultiJump
 
         public override void Load(bool hotReload)
         {
+            
         }
 
         public void SetVars()
