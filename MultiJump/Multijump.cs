@@ -84,7 +84,7 @@ namespace MultiJump
                         var Origin = pawn?.AbsVelocity;
                         if (pawn != null && Origin != null)
                         {
-                            pawn.Teleport(null, null, new Vector(Origin.X, Origin.Y, Random.Shared.Next(300, 320)));
+                            pawn.AbsVelocity.Z = 300;
                             TotalJumpsDid[Slot] += 1;
                         }
                     }
@@ -108,7 +108,7 @@ namespace MultiJump
         }
 
         [GameEventHandler(HookMode.Pre)]
-        public HookResult OnClietSpawn(EventPlayerSpawn @event, GameEventInfo info)
+        public HookResult OnClientSpawn(EventPlayerSpawn @event, GameEventInfo info)
         {
             var player = @event.Userid;
             if (player == null) return 0;
