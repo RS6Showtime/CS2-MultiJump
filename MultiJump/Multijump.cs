@@ -21,34 +21,29 @@ namespace MultiJump
         public override string ModuleVersion => "1.0";
         public override string ModuleDescription => "Allow multiple jumps for everyone";
 
-        // Pllayer Settings
-        
+        // Player Settings
         public PlayerButtons[] LastPlayerButtons = new PlayerButtons[33];
         public int[] TotalJumpsDid = new int[33];
         
-
         public int AdditionalsJumpAvailable = 0;
-
-        
 
         public PluginConfig Config { get; set; } = new();
 
         public override void Load(bool hotReload)
         {
-            // Delete everything from the dict on load
         }
 
         public void SetVars()
         {
-            // Don't want additionals jumps? Remove OnTick Listener to save up mem.
-            if (Config.AdditionalsJump <= 0)
-            {
-                RemoveListener<Listeners.OnTick>(OnTickExecuted);
-            }
-            else
+            // Removing exists events
+            RemoveListener<Listeners.OnTick>(OnTickExecuted);
+            // Register the listener if we have at least 1 additional jump
+            if (Config.AdditionalsJump > 0)
             {
                 RegisterListener<Listeners.OnTick>(OnTickExecuted);
             }
+
+            // Convert additoonal jumps + 1 (num of jumps + first jump player did)
             AdditionalsJumpAvailable = Config.AdditionalsJump + 1;
         }
 
@@ -59,14 +54,16 @@ namespace MultiJump
             SetVars();
         }
 
-        public void OnTickExecuted()
+        private void OnTickExecuted()
         {
             var players = Utilities.GetPlayers().Where(p => p != null && p.IsValid && !p.IsBot && !p.IsHLTV && p.Connected == PlayerConnectedState.PlayerConnected && p.Team > CsTeam.Spectator);
 
+            // Vars used latetly in loop
             PlayerButtons LastButtons;
             int Jumps = 0;
             int Slot = 0;
 
+            // Loop through enumerate & filtred players 
             foreach (var player in players)
             {
                 if (player == null) continue;
@@ -77,7 +74,7 @@ namespace MultiJump
 
                 var buttons = player.Buttons;
 
-                // In jump
+                // In jump (Prvent holding spaces by check if the last button was space)
                 if ((buttons & PlayerButtons.Jump) != 0 && (LastButtons & PlayerButtons.Jump) == 0)
                 {
                     // Reached max jumps
@@ -93,7 +90,8 @@ namespace MultiJump
                     }
                 }
 
-                if (Jumps != 0 && player?.PlayerPawn?.Value?.OnGroundLastTick != null && player.PlayerPawn.Value.OnGroundLastTick)
+                // Need to reset user jumps when he hit the ground? Yep
+                if (Jumps != 0 && player?.PlayerPawn?.Value?.Flags != null && ((PlayerFlags)player.PlayerPawn.Value.Flags & PlayerFlags.FL_ONGROUND) != 0)
                     TotalJumpsDid[Slot] = 0;
 
                 LastPlayerButtons[Slot] = buttons;
